@@ -1,0 +1,43 @@
+Sample structured logs from data/logs.jsonl:
+
+1. Request Received:
+{
+  "service": "api",
+  "payload": {
+    "message_preview": "What is your refund policy? My email is [REDACTED_EMAIL]"
+  },
+  "event": "request_received",
+  "feature": "qa",
+  "user_id_hash": "2055254ee30a",
+  "model": "claude-sonnet-4-5",
+  "correlation_id": "req-71517710",
+  "session_id": "s01",
+  "env": "dev",
+  "level": "info",
+  "ts": "2026-09-29T08:59:43.134227Z"
+}
+
+2. Response Sent:
+{
+  "service": "api",
+  "latency_ms": 1136,
+  "ttft_ms": 50,
+  "tokens_in": 36,
+  "tokens_out": 179,
+  "cost_usd": 0.002793,
+  "quality_score": 0.9,
+  "tool_name": "retrieval",
+  "tool_success": true,
+  "payload": {
+    "answer_preview": "Starter answer. You should improve this output logic and add better quality chec..."
+  },
+  "event": "response_sent",
+  "feature": "qa",
+  "user_id_hash": "2055254ee30a",
+  "model": "claude-sonnet-4-5",
+  "correlation_id": "req-71517710",
+  "session_id": "s01",
+  "env": "dev",
+  "level": "info",
+  "ts": "2026-09-29T08:59:44.272677Z"
+}

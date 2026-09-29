@@ -18,39 +18,58 @@
 
 | Evidence | Đường dẫn |
 |---|---|
-| Pytest cuối | `evidence/01-pytest.png` |
-| Log validator | `evidence/02-log-validator.png` |
-| Dashboard validator | `evidence/03-dashboard-validator.png` |
-| Structured log | `evidence/04-structured-log.png` |
-| PII redaction | `evidence/05-pii-redaction.png` |
-| Trace list | `evidence/06-trace-list.png` |
-| Trace waterfall | `evidence/07-trace-waterfall.png` |
-| Trace metadata | `evidence/08-trace-metadata.png` |
-| Prompt versions | `evidence/09-prompt-versions.png` |
-| Prompt rollback | `evidence/10-prompt-rollback.png` |
-| Dashboard runtime | `evidence/11-dashboard-overview.png` |
-| Incident metric | `evidence/12-incident-metric.png` |
-| Incident log | `evidence/13-incident-log.png` |
-| Incident trace | `evidence/14-incident-trace.png` |
+| Pytest cuối | `evidence/01-pytest.txt` |
+| Log validator | `evidence/02-log-validator.txt` |
+| Dashboard validator | `evidence/03-dashboard-validator.txt` |
+| Structured log | `evidence/04-structured-log.txt` |
+| PII redaction | `evidence/05-pii-redaction.txt` |
+| Trace list | Chưa có evidence (CP2 chưa hoàn thành) |
+| Trace waterfall | Chưa có evidence (CP2 chưa hoàn thành) |
+| Trace metadata | Chưa có evidence (CP2 chưa hoàn thành) |
+| Prompt versions | Chưa có evidence (CP2 chưa hoàn thành) |
+| Prompt rollback | Chưa có evidence (CP2 chưa hoàn thành) |
+| Dashboard runtime | Chưa có evidence (CP2 chưa hoàn thành) |
+| Incident metric | Chưa có evidence (CP3 chưa hoàn thành) |
+| Incident log | Chưa có evidence (CP3 chưa hoàn thành) |
+| Incident trace | Chưa có evidence (CP3 chưa hoàn thành) |
 
 ## 3. Kết quả kỹ thuật
 
 | Nội dung | Baseline | Kết quả cuối | Nhận xét |
 |---|---|---|---|
-| `validate_logs.py` | 30/100 | | Chưa có correlation_id và log enrichment (chưa làm CP1) |
-| `validate_dashboard.py` | 6/6 panel hợp lệ | | Hợp lệ theo contract ban đầu |
-| `pytest` | 22/22 passed | | Toàn bộ unit test ban đầu pass |
-| Số traces hợp lệ | 10 traces | | Đã gửi được 10 traces lên Langfuse từ load_test baseline |
-| Số PII leak | 0 | | Baseline chưa phát hiện leak |
-| Latency P95 / TTFT P95 | ~391ms / N/A | | Chưa đo TTFT trong baseline |
-| Retrieval success rate | 100% | | Mặc định baseline |
+| `validate_logs.py` | 30/100 | 100/100 | Đạt tuyệt đối: đầy đủ correlation_id, log enrichment và PII scrubbing |
+| `validate_dashboard.py` | 6/6 panel hợp lệ | 6/6 panel hợp lệ | Hợp lệ theo contract 6 panel |
+| `pytest` | 22/22 passed | 24/24 passed | Toàn bộ unit tests và PII tests đều passed |
+| Số traces hợp lệ | 10 traces | 10 traces | Đã gửi được 10 traces lên Langfuse từ load_test có correlation_id |
+| Số PII leak | 0 | 0 | Không còn rò rỉ PII nguyên văn trong logs |
+| Latency P95 / TTFT P95 | ~391ms / N/A | ~400ms / 51ms | P95 latency ổn định, đã đo TTFT trong log |
+| Retrieval success rate | 100% | 100% | Retrieval thành công 100% trong load test |
 
 ## 4. Logging và PII
 
 - **Cách tạo/nhận và truyền correlation ID:**
+  - Trong `app/middleware.py`, tạo `CorrelationIdMiddleware(BaseHTTPMiddleware)`.
+  - Ở đầu mỗi request, gọi `clear_contextvars()` để xóa contextvars cũ, tránh rò rỉ context giữa các request khác nhau.
+  - Nhận `x-request-id` từ request header nếu client truyền lên; nếu không có, middleware tự sinh chuỗi ID mới với định dạng `req-<8-hex>` (`f"req-{uuid.uuid4().hex[:8]}"`).
+  - Gắn ID vào structlog contextvars bằng `bind_contextvars(correlation_id=correlation_id)` và lưu vào `request.state.correlation_id`.
+  - Khi hoàn thành request, middleware tính `duration_ms` và trả về hai header: `x-request-id` và `x-response-time-ms`.
+  - `correlation_id` cũng được trả về trong response body (`ChatResponse.correlation_id`), truyền vào metadata của các log events (`request_received`, `response_sent`) và đưa vào metadata của trace Langfuse để liên kết log với trace.
+
 - **Các metadata được ghi vào structured log:**
+  - Metadata cơ bản toàn cục: `ts` (ISO 8601 UTC timestamp), `level` (`info`, `error`, `warning`), `service` (`api`, `control`, v.v.), `event` (`request_received`, `response_sent`, `request_failed`, `app_started`).
+  - Metadata request context (được bind trước khi ghi log đầu tiên của request): `correlation_id`, `user_id_hash` (SHA256 băm 12 ký tự đầu để bảo vệ danh tính user), `session_id`, `feature`, `model` (`claude-sonnet-4-5`), `env` (`dev`).
+  - Metadata payload và vận hành (`response_sent`): `latency_ms`, `ttft_ms`, `tokens_in`, `tokens_out`, `cost_usd`, `quality_score`, `tool_name` (`retrieval`), `tool_success` (`true`), `payload.answer_preview` (được tóm tắt và scrub).
+
 - **Cách bảo đảm PII được scrub trước khi ghi:**
+  - Xây dựng regex patterns trong `app/pii.py` cho 4 loại thông tin nhạy cảm: `email`, `phone_vn` (hỗ trợ các đầu số 09, 03, +84 và các phân cách space, dot, hyphen), `cccd` (12 chữ số), `credit_card` (16 chữ số liền nhau hoặc chia nhóm 4 số bởi space/hyphen).
+  - Hàm `scrub_text` thay thế toàn bộ các chuỗi khớp mẫu bằng nhãn `[REDACTED_<TYPE>]`.
+  - Trong `app/logging_config.py`, tạo processor `scrub_event` duyệt đệ quy toàn bộ các trường trong `event_dict` (trừ `ts` và `level`) để làm sạch chuỗi văn bản, dictionary con và list.
+  - Đăng ký `scrub_event` TRƯỚC `JsonlFileProcessor` và `JSONRenderer` trong pipeline structlog processors, đảm bảo PII được che triệt để trước khi serialize JSON và trước khi ghi vào file `data/logs.jsonl` hoặc stdout.
+
 - **Cách kiểm chứng kết quả:**
+  - Chạy `pytest tests/test_pii.py` và `pytest tests/test_validate_logs.py`: toàn bộ test cases cho email, phone, cccd, credit card và validator detection đều PASSED (24/24).
+  - Khởi động server với `.env`, chạy `python scripts/load_test.py` với 10 sample queries (chứa email, phone, credit card).
+  - Chạy `python scripts/validate_logs.py`: đạt điểm tuyệt đối **100/100** với 0 missing required fields, 0 missing enrichment fields, 10 unique correlation IDs và 0 PII leak detected.
 
 ## 5. Tracing và prompt versioning
 

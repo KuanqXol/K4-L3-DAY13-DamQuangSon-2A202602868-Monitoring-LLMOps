@@ -1,0 +1,32 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-8.3.5, pluggy-1.6.0
+rootdir: D:\clone\vin\Lab\K4-L3-DAY13-DamQuangSon-2A202602868-Monitoring-LLMOps
+plugins: anyio-4.15.1
+collected 24 items
+
+tests/test_agent_prompt_trace.py::test_agent_records_prompt_version_with_v4_observation_api PASSED [  4%]
+tests/test_challenge_config.py::ChallengeConfigTests::test_explicit_practice_incident_does_not_require_release_file PASSED [  8%]
+tests/test_challenge_config.py::ChallengeConfigTests::test_missing_challenge_explains_that_coach_has_not_released_it PASSED [ 12%]
+tests/test_challenge_config.py::ChallengeConfigTests::test_official_incident_comes_from_release_file PASSED [ 16%]
+tests/test_challenge_config.py::ChallengeConfigTests::test_query_order_is_deterministic_for_the_released_seed PASSED [ 20%]
+tests/test_challenge_config.py::ChallengeConfigTests::test_unknown_incident_is_rejected PASSED [ 25%]
+tests/test_challenge_config.py::ChallengeConfigTests::test_valid_challenge_is_loaded PASSED [ 29%]
+tests/test_chat_observability.py::test_chat_response_log_exposes_quality_for_dashboard PASSED [ 33%]
+tests/test_cli_windows_encoding.py::WindowsCliEncodingTests::test_help_does_not_crash_when_terminal_uses_cp1258 PASSED [ 37%]
+tests/test_dashboard_validator.py::test_repository_dashboard_contract_is_valid PASSED [ 41%]
+tests/test_dashboard_validator.py::test_validator_rejects_panel_without_threshold PASSED [ 45%]
+tests/test_dashboard_validator.py::test_validator_rejects_panel_without_query_example PASSED [ 50%]
+tests/test_metrics.py::test_percentile_basic PASSED                      [ 54%]
+tests/test_pii.py::test_scrub_email PASSED                               [ 58%]
+tests/test_pii.py::test_scrub_common_vietnamese_phone_formats PASSED     [ 62%]
+tests/test_pii.py::test_scrub_cccd PASSED                                [ 66%]
+tests/test_pii.py::test_scrub_credit_card PASSED                         [ 70%]
+tests/test_prompt_management.py::test_local_prompt_fallback_keeps_lab_runnable_without_langfuse PASSED [ 75%]
+tests/test_prompt_management.py::test_langfuse_prompt_version_and_label_are_resolved PASSED [ 79%]
+tests/test_prompt_management.py::test_prompt_fetch_failure_uses_visible_local_fallback PASSED [ 83%]
+tests/test_prompt_management.py::test_sdk_fallback_is_not_reported_as_managed_prompt PASSED [ 87%]
+tests/test_tracing_adapter.py::TracingAdapterTests::test_adapter_uses_the_installed_langfuse_v4_api PASSED [ 91%]
+tests/test_tracing_adapter.py::TracingAdapterTests::test_tracing_is_disabled_without_both_keys PASSED [ 95%]
+tests/test_validate_logs.py::test_validator_detects_raw_vietnamese_phone PASSED [100%]
+
+============================= 24 passed in 1.74s ==============================

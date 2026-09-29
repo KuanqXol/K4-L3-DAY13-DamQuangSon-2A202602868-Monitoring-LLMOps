@@ -1,0 +1,19 @@
+PII Redaction Verification Evidence:
+
+Query input with PII (from data/sample_queries.jsonl):
+1. Email: synthetic email test value (redacted in this artifact)
+2. Phone VN: synthetic Vietnamese phone test value (redacted in this artifact)
+3. Credit card: synthetic payment-card test value (redacted in this artifact)
+
+Actual Logs recorded in data/logs.jsonl:
+1. Email scrubbed:
+{"service": "api", "payload": {"message_preview": "What is your refund policy? My email is [REDACTED_EMAIL]"}, "event": "request_received", "feature": "qa", "user_id_hash": "2055254ee30a", "model": "claude-sonnet-4-5", "correlation_id": "req-71517710", "session_id": "s01", "env": "dev", "level": "info", "ts": "2026-09-29T08:59:43.134227Z"}
+
+2. Phone scrubbed:
+{"service": "api", "payload": {"message_preview": "Here is my phone [REDACTED_PHONE_VN], what should be logged?"}, "event": "request_received", "feature": "qa", "user_id_hash": "64f6ec689229", "model": "claude-sonnet-4-5", "correlation_id": "req-940862f6", "session_id": "s05", "env": "dev", "level": "info", "ts": "2026-09-29T08:59:45.463741Z"}
+
+3. Credit card scrubbed:
+{"service": "api", "payload": {"message_preview": "What is the policy for PII and credit card [REDACTED_CREDIT_CARD]?"}, "event": "request_received", "feature": "qa", "user_id_hash": "4d14d5d4f719", "model": "claude-sonnet-4-5", "correlation_id": "req-e5e17654", "session_id": "s09", "env": "dev", "level": "info", "ts": "2026-09-29T08:59:47.563350Z"}
+
+Potential PII leaks detected by validate_logs.py: 0
+Score: 100/100
