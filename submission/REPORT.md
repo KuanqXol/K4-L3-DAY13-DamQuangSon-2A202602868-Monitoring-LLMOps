@@ -4,13 +4,13 @@
 
 ## 1. Thông tin học viên
 
-- **Họ và tên:**
-- **MSSV:**
-- **Lớp:** K4-L3A
-- **Repository URL:**
+- **Họ và tên:** Đàm Quang Sơn
+- **MSSV:** 2A202602868
+- **Lớp:** H202
+- **Repository URL:** https://github.com/KuanqXol/K4-L3-DAY13-DamQuangSon-2A202602868-Monitoring-LLMOps
 - **Commit SHA cuối:**
 - **Challenge ID:**
-- **Tên project Langfuse cá nhân:** `day13-k4-l3a-<MSSV>`
+- **Tên project Langfuse cá nhân:** `day13-k4-l3a-2A202602868`
 
 ## 2. Evidence index
 
@@ -37,13 +37,13 @@
 
 | Nội dung | Baseline | Kết quả cuối | Nhận xét |
 |---|---|---|---|
-| `validate_logs.py` | | | |
-| `validate_dashboard.py` | | | |
-| `pytest` | | | |
-| Số traces hợp lệ | | | |
-| Số PII leak | | | |
-| Latency P95 / TTFT P95 | | | |
-| Retrieval success rate | | | |
+| `validate_logs.py` | 30/100 | | Chưa có correlation_id và log enrichment (chưa làm CP1) |
+| `validate_dashboard.py` | 6/6 panel hợp lệ | | Hợp lệ theo contract ban đầu |
+| `pytest` | 22/22 passed | | Toàn bộ unit test ban đầu pass |
+| Số traces hợp lệ | 10 traces | | Đã gửi được 10 traces lên Langfuse từ load_test baseline |
+| Số PII leak | 0 | | Baseline chưa phát hiện leak |
+| Latency P95 / TTFT P95 | ~391ms / N/A | | Chưa đo TTFT trong baseline |
+| Retrieval success rate | 100% | | Mặc định baseline |
 
 ## 4. Logging và PII
 
