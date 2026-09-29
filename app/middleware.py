@@ -31,5 +31,8 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
         duration_ms = (time.perf_counter() - start) * 1000
         response.headers["x-request-id"] = correlation_id
         response.headers["x-response-time-ms"] = f"{duration_ms:.2f}"
+        trace_id = getattr(request.state, "trace_id", None)
+        if trace_id:
+            response.headers["x-trace-id"] = trace_id
         
         return response

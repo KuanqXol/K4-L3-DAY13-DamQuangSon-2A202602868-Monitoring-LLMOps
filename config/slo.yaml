@@ -7,7 +7,9 @@ primary_slo:
     total_event: 'event == "request_received"'
   target_percent: 99.5
   error_budget_percent: 0.5
-  note: Học viên phải giải thích hoặc điều chỉnh ngưỡng bằng baseline của mình.
+  error_budget_formula: 100 - target_percent
+  example_allowed_bad_requests_per_1000: 5
+  note: Mỗi 1000 request trong cửa sổ 28 ngày chỉ cho phép tối đa 5 request không đạt SLI; khi budget cạn, ưu tiên reliability work trước thay đổi rủi ro.
 guardrails:
   error_rate_pct_max: 2
   daily_cost_usd_max: 2.5

@@ -1,0 +1,13 @@
+CP2 dashboard runtime evidence
+Dashboard artifact: dashboard/index.html
+Time range: 2026-09-29 13:56 UTC -> 2026-09-29 14:56 UTC (60 minutes)
+Refresh: 30 seconds
+Panels: latency/TTFT, traffic, errors/retrieval, cost, tokens, quality
+
+Latency: P50=152.0 ms; P95=1094.0 ms; P99=2470.0 ms; TTFT P95=51.0 ms
+Traffic: requests=20; rate=0.33 requests/minute
+Errors: error_rate=0.00%; retrieval_success=100.00%
+Cost: total=$0.044274; per_minute=$0.000738
+Tokens: input=1208; output=2710
+Quality: mean=0.880
+Thresholds: latency P95<=3000 ms; error rate<=2%; retrieval success>=90%; quality>=0.75; daily cost<=2.50 USD.

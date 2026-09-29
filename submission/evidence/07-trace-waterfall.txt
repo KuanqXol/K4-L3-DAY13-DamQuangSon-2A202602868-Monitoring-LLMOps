@@ -1,0 +1,7 @@
+CP2 Langfuse trace waterfall
+Project: day13-k4-l3a-2A202602868
+Trace ID: 757bb04cd361a79a1095065cdee537c4
+
+  - name=retrieval type=RETRIEVER observation_id=e70932aa48ee5add parent=8e000b5b65aaef74
+- name=lab-agent-run type=AGENT observation_id=8e000b5b65aaef74 parent=(root)
+  - name=llm-generation type=GENERATION observation_id=3b6fbeccc992d85f parent=8e000b5b65aaef74

@@ -3,13 +3,22 @@ from __future__ import annotations
 import os
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 from . import metrics
 from .mock_llm import FakeLLM
 from .mock_rag import retrieve
 from .pii import hash_user_id, summarize_text
 from .prompt_management import resolve_prompt
-from .tracing import get_langfuse_client, observe, propagate_attributes, tracing_enabled
+from .tracing import (
+    get_current_trace_id,
+    get_langfuse_client,
+    observe,
+    propagate_attributes,
+    start_observation,
+    tracing_enabled,
+    update_observation,
+)
 
 
 @dataclass
@@ -21,6 +30,7 @@ class AgentResult:
     tokens_out: int
     cost_usd: float
     quality_score: float
+    trace_id: str | None = None
 
 
 class LabAgent:
@@ -51,7 +61,34 @@ class LabAgent:
             },
         ):
             started = time.perf_counter()
-            docs = retrieve(message)
+            with start_observation(
+                name="retrieval",
+                as_type="retriever",
+                input={"query_preview": summarize_text(message)},
+                metadata={
+                    "correlation_id": correlation_id,
+                    "feature": feature,
+                },
+            ) as retrieval_observation:
+                try:
+                    docs = retrieve(message)
+                except Exception as exc:
+                    update_observation(
+                        retrieval_observation,
+                        level="ERROR",
+                        status_message=type(exc).__name__,
+                        output={"retrieval_success": False},
+                    )
+                    raise
+                update_observation(
+                    retrieval_observation,
+                    output={
+                        "doc_count": len(docs),
+                        "documents_preview": [summarize_text(doc) for doc in docs],
+                        "retrieval_success": True,
+                    },
+                )
+
             prompt = resolve_prompt(
                 langfuse_client,
                 feature=feature,
@@ -71,13 +108,62 @@ class LabAgent:
                 },
                 version=prompt.version,
             )
-            # TODO (CP2): instrument retrieve() and FakeLLM.generate() as child
-            # observations. The nested generation must receive prompt, usage and cost.
+
             with propagate_attributes(prompt=prompt.managed_prompt):
-                response = self.llm.generate(prompt.text)
+                completion_start_time = datetime.now(timezone.utc)
+                with start_observation(
+                    name="llm-generation",
+                    as_type="generation",
+                    input={
+                        "prompt_name": prompt.name,
+                        "prompt_label": prompt.label,
+                        "prompt_version": prompt.version,
+                        "prompt_preview": summarize_text(prompt.text),
+                    },
+                    metadata={
+                        "correlation_id": correlation_id,
+                        "feature": feature,
+                        "prompt_source": prompt.source,
+                        "prompt_name": prompt.name,
+                        "prompt_label": prompt.label,
+                        "prompt_version": prompt.version,
+                    },
+                    model=self.model,
+                    model_parameters={"temperature": 0.0},
+                    completion_start_time=completion_start_time,
+                    prompt=prompt.managed_prompt,
+                ) as generation_observation:
+                    try:
+                        response = self.llm.generate(prompt.text)
+                    except Exception as exc:
+                        update_observation(
+                            generation_observation,
+                            level="ERROR",
+                            status_message=type(exc).__name__,
+                        )
+                        raise
+
+                    input_cost = round((response.usage.input_tokens / 1_000_000) * 3, 6)
+                    output_cost = round((response.usage.output_tokens / 1_000_000) * 15, 6)
+                    cost_usd = round(input_cost + output_cost, 6)
+                    update_observation(
+                        generation_observation,
+                        output={"answer_preview": summarize_text(response.text)},
+                        usage_details={
+                            "prompt_tokens": response.usage.input_tokens,
+                            "completion_tokens": response.usage.output_tokens,
+                            "total_tokens": response.usage.input_tokens
+                            + response.usage.output_tokens,
+                        },
+                        cost_details={
+                            "input_cost": input_cost,
+                            "output_cost": output_cost,
+                            "total_cost": cost_usd,
+                        },
+                    )
             quality_score = self._heuristic_quality(message, response.text, docs)
             latency_ms = int((time.perf_counter() - started) * 1000)
-            cost_usd = self._estimate_cost(response.usage.input_tokens, response.usage.output_tokens)
+            trace_id = get_current_trace_id(langfuse_client)
 
         metrics.record_request(
             latency_ms=latency_ms,
@@ -96,6 +182,7 @@ class LabAgent:
             tokens_out=response.usage.output_tokens,
             cost_usd=cost_usd,
             quality_score=quality_score,
+            trace_id=trace_id,
         )
 
     def _estimate_cost(self, tokens_in: int, tokens_out: int) -> float:

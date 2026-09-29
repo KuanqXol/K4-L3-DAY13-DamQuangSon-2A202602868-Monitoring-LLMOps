@@ -78,10 +78,12 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             tokens_out=result.tokens_out,
             cost_usd=result.cost_usd,
             quality_score=result.quality_score,
+            trace_id=result.trace_id,
             tool_name="retrieval",
             tool_success=True,
             payload={"answer_preview": summarize_text(result.answer)},
         )
+        request.state.trace_id = result.trace_id
         return ChatResponse(
             answer=result.answer,
             correlation_id=request.state.correlation_id,
@@ -91,6 +93,7 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             tokens_out=result.tokens_out,
             cost_usd=result.cost_usd,
             quality_score=result.quality_score,
+            trace_id=result.trace_id,
         )
     except Exception as exc:  # pragma: no cover
         error_type = type(exc).__name__

@@ -1,0 +1,25 @@
+CP2 Langfuse trace list
+Project: day13-k4-l3a-2A202602868
+Trace name: day13-agent-request
+Traces collected: 20
+
+01. trace_id=757bb04cd361a79a1095065cdee537c4 correlation_id=req-7a1acd42 prompt_version=1 prompt_label=baseline
+02. trace_id=2112a5be74d5b3f4a978cdd4c128fe27 correlation_id=req-94d6908c prompt_version=1 prompt_label=baseline
+03. trace_id=d40d35ad6e9db5c790a065e81e6aeb6e correlation_id=req-a6d51041 prompt_version=1 prompt_label=baseline
+04. trace_id=58dfe8637fa992ace766ad6bc4eefd60 correlation_id=req-b6ab7f57 prompt_version=1 prompt_label=baseline
+05. trace_id=bc261111ac0eab37ea90a6ea6683e62c correlation_id=req-4697b3b5 prompt_version=1 prompt_label=baseline
+06. trace_id=5abcad9e45114ed58119cc64d8e3ca9c correlation_id=req-ce712a23 prompt_version=1 prompt_label=baseline
+07. trace_id=baf5e45201ad83ac47c0154770605801 correlation_id=req-d1884eb3 prompt_version=1 prompt_label=baseline
+08. trace_id=470ca28497214fbb5b8d202089557898 correlation_id=req-0ecc5df7 prompt_version=1 prompt_label=baseline
+09. trace_id=31c0386862f208aeab571eb4f46bce6a correlation_id=req-2e4f3369 prompt_version=1 prompt_label=baseline
+10. trace_id=b4248d060e1f9a4955f6d92b213c67fd correlation_id=req-0f2dc111 prompt_version=1 prompt_label=baseline
+11. trace_id=d4a32867615bcd7a2fb8d2f70c333465 correlation_id=req-d6242e92 prompt_version=2 prompt_label=candidate
+12. trace_id=c481ac051bf10f4f65b1a459bf41ba6d correlation_id=req-8d271475 prompt_version=2 prompt_label=candidate
+13. trace_id=04a0034c85de504bc08bab5c2b81aacf correlation_id=req-59a6dccf prompt_version=2 prompt_label=candidate
+14. trace_id=9d0cc1f0cb414d1370ec4deaedf109a1 correlation_id=req-d44ebfae prompt_version=2 prompt_label=candidate
+15. trace_id=f5c95577f9a5c2454e697bb74f81fa03 correlation_id=req-7dd40813 prompt_version=2 prompt_label=candidate
+16. trace_id=8af18485ca51fffccc9de8650d692a2e correlation_id=req-7dd7e5fc prompt_version=2 prompt_label=candidate
+17. trace_id=2075134600044047a3a2e1da2bdc86c7 correlation_id=req-d5b17894 prompt_version=2 prompt_label=candidate
+18. trace_id=dbd3b21680a693818032549fe607af06 correlation_id=req-f23e7a80 prompt_version=2 prompt_label=candidate
+19. trace_id=115717cde72fbff365ad6c0dd15df511 correlation_id=req-eb9b306b prompt_version=2 prompt_label=candidate
+20. trace_id=ed3f0f05c15f7f4e2a25cb53c55a3fcc correlation_id=req-f9fa50c4 prompt_version=2 prompt_label=candidate

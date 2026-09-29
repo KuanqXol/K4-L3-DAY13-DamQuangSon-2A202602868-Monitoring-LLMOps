@@ -1,0 +1,11 @@
+CP2 Langfuse trace metadata
+Project: day13-k4-l3a-2A202602868
+Trace ID: 757bb04cd361a79a1095065cdee537c4
+Correlation ID: req-7a1acd42
+Prompt name: day13-chat
+Prompt label: baseline
+Prompt version: 1
+Model: claude-sonnet-4-5
+Usage details: {"input": 53, "output": 104, "total": 157}
+Cost details: {"input_cost": 0.000159, "output_cost": 0.00156, "total_cost": 0.001719}
+Raw prompt/output: not captured; only sanitized previews are instrumented.

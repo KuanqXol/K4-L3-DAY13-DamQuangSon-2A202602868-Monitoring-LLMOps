@@ -1,0 +1,24 @@
+Action: bootstrap
+Project: day13-k4-l3a-2A202602868
+Prompt: day13-chat
+Versions found: 4
+- version=1 labels=baseline, production
+- version=2 labels=candidate
+- version=3 labels=(none)
+- version=4 labels=latest
+Action: promote production -> v2
+Project: day13-k4-l3a-2A202602868
+Prompt: day13-chat
+Versions found: 4
+- version=1 labels=baseline
+- version=2 labels=candidate, production
+- version=3 labels=(none)
+- version=4 labels=latest
+Action: rollback production -> v1
+Project: day13-k4-l3a-2A202602868
+Prompt: day13-chat
+Versions found: 4
+- version=1 labels=baseline, production
+- version=2 labels=candidate
+- version=3 labels=(none)
+- version=4 labels=latest
